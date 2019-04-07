@@ -59,7 +59,7 @@ public class InternalPersonResult {
         return position != null ? position.intValue() : null;
     }
 
-    private static ZonedDateTime toZoned(XMLGregorianCalendar time) {
-        return time != null ? time.toGregorianCalendar().toZonedDateTime() : null;
+    private static ZonedDateTime toZoned(XMLGregorianCalendar date) {
+        return date != null ? date.toGregorianCalendar().toZonedDateTime() : null;
     }
 }

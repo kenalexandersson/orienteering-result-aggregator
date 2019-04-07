@@ -7,6 +7,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.ikuven.resultaggregator.ResultAggregatorProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
@@ -29,12 +31,12 @@ import java.security.cert.X509Certificate;
 @Component
 public class EventorClient {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventorClient.class);
+
     @Autowired
     private ResultAggregatorProperties properties;
 
-    public InputStream fetchResults(String eventId) throws IOException {
-
-        ResponseEntity<Resource> result = null;
+    public InputStream fetchResults(String eventId) {
 
         try (CloseableHttpClient httpClient = createAcceptSelfSignedCertificateClient()) {
 
@@ -50,13 +52,14 @@ public class EventorClient {
 
             HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-            result = restTemplate.exchange(resourceUrl, HttpMethod.GET, requestEntity, Resource.class);
+            LOGGER.info("Calling Eventor API using url {}", resourceUrl);
+            ResponseEntity<Resource> result = restTemplate.exchange(resourceUrl, HttpMethod.GET, requestEntity, Resource.class);
+
+            return result != null && result.getBody() != null ? result.getBody().getInputStream() : null;
 
         } catch (IOException | KeyStoreException | KeyManagementException | NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-
-        return result != null && result.getBody() != null ? result.getBody().getInputStream() : null;
     }
 
     private CloseableHttpClient createAcceptSelfSignedCertificateClient() throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {

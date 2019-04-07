@@ -1,17 +1,18 @@
 package org.ikuven.resultaggregator.web;
 
-import org.ikuven.resultaggregator.results.InternalClassResult;
+import org.ikuven.resultaggregator.results.InternalResult;
 import org.ikuven.resultaggregator.results.ResultConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.xml.bind.JAXBException;
-import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.List;
 
 @RestController
 public class ResultController {
@@ -23,10 +24,18 @@ public class ResultController {
     private ResultConverter resultConverter;
 
     @GetMapping(path = "/results/{eventId}", produces = "application/json")
-    public List<InternalClassResult> getResults(@PathVariable String eventId, @RequestParam(value = "limit", required = false) Integer limit) throws IOException, JAXBException {
+    public InternalResult getResults(@PathVariable String eventId, @RequestParam(value = "top", required = false) Integer top) throws JAXBException {
 
         InputStream xmlContent = eventorClient.fetchResults(eventId);
 
-        return resultConverter.process(xmlContent, limit);
+        return resultConverter.process(xmlContent, top);
+    }
+
+    @GetMapping(path = "/results/dummy", produces = "application/json")
+    public InternalResult getDummyResults(@RequestParam(value = "top", required = false) Integer top) throws JAXBException, FileNotFoundException {
+
+        FileInputStream xmlContent = new FileInputStream(ResourceUtils.getFile("classpath:results.xml"));
+
+        return resultConverter.process(xmlContent, top);
     }
 }

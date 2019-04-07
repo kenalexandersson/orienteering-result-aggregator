@@ -2,13 +2,10 @@ package org.ikuven.resultaggregator.results;
 
 import org.orienteering.datastandard.*;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ResourceUtils;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,16 +13,19 @@ import java.util.stream.Collectors;
 @Component
 public class ResultConverter {
 
-    public List<InternalClassResult> process(InputStream xmlContent, Integer limit) throws JAXBException {
+    public InternalResult process(InputStream xmlContent, Integer limit) throws JAXBException {
 
-        return extractResult((ResultList) getUnmarshaller().unmarshal(xmlContent), limit);
+        ResultList resultList = (ResultList) getUnmarshaller().unmarshal(xmlContent);
+
+        InternalEvent internalEvent = extractEventData(resultList);
+        List<InternalClassResult> internalClassResults = extractResult(resultList, limit);
+
+        return InternalResult.of(internalEvent, internalClassResults);
     }
 
-    public List<InternalClassResult> process(String fileLocation, Integer limit) throws FileNotFoundException, JAXBException {
-
-        File file = ResourceUtils.getFile(fileLocation);
-
-        return extractResult((ResultList) getUnmarshaller().unmarshal(file), limit);
+    private InternalEvent extractEventData(ResultList resultList) {
+        Event event = resultList.getEvent();
+        return InternalEvent.of(event.getName(), event.getStartTime());
     }
 
     private List<InternalClassResult> extractResult(ResultList resultList, Integer limit) {
@@ -41,7 +41,13 @@ public class ResultConverter {
                 .filter(internalPersonResult -> hasPosition(internalPersonResult, limit))
                 .collect(Collectors.toList());
 
-        return InternalClassResult.of(classResult.getClazz().getName(), getNumberOfCompetitors(classResult), getStillActive(classResult), getStatus(classResult), internalPersonResults);
+        return InternalClassResult.of(
+                classResult.getClazz().getName(),
+                getNumberOfCompetitors(classResult),
+                getStillActive(classResult),
+                getStatus(classResult),
+                internalPersonResults
+        );
     }
 
     private Long getStillActive(ClassResult classResult) {
