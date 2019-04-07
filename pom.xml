@@ -93,8 +93,10 @@
                     <sources>
                         <source>src/main/resources/iof3.0.xsd</source>
                     </sources>
-                    <!--outputDirectory>${basedir}/src/main/java</outputDirectory-->
+                    <outputDirectory>${basedir}/src/main/java</outputDirectory>
+                    <packageName>org.orienteering.datastandard</packageName>
                     <clearOutputDir>false</clearOutputDir>
+                    <addGeneratedAnnotation>true</addGeneratedAnnotation>
                 </configuration>
             </plugin>
         </plugins>

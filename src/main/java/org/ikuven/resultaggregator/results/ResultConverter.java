@@ -1,6 +1,6 @@
 package org.ikuven.resultaggregator.results;
 
-import org.orienteering.datastandard._3.*;
+import org.orienteering.datastandard.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 

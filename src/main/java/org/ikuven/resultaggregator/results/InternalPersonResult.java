@@ -2,7 +2,7 @@ package org.ikuven.resultaggregator.results;
 
 import lombok.ToString;
 import lombok.Value;
-import org.orienteering.datastandard._3.PersonRaceResult;
+import org.orienteering.datastandard.PersonRaceResult;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;

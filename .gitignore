@@ -27,3 +27,7 @@ HELP.md
 
 ### VS Code ###
 .vscode/
+
+### jaxb generated classes ###
+/META-INF/JAXB
+/org/orienteering/
