@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: result-aggreagator
+
+server:
+  port: 20100
+
+logging:
+  level:
+    org.apache.http: INFO
+
+
+
