@@ -1,0 +1,3 @@
+= Orienteering result aggregator
+
+A simple project collecting data from the Eventor API for orienteering results, https://eventor.orientering.se/api/documentation.
