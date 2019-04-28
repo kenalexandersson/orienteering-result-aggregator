@@ -31,6 +31,14 @@ public class ResultController {
         return resultConverter.process(xmlContent, top);
     }
 
+    @GetMapping(path = "/results/{eventId}/{eventClass}", produces = "application/json")
+    public InternalResult getResults(@PathVariable String eventId, @PathVariable String eventClass, @RequestParam(value = "top", required = false) Integer top) throws JAXBException {
+
+        InputStream xmlContent = eventorClient.fetchResults(eventId);
+
+        return resultConverter.process(xmlContent, eventClass, top);
+    }
+
     @GetMapping(path = "/results/dummy", produces = "application/json")
     public InternalResult getDummyResults(@RequestParam(value = "top", required = false) Integer top) throws JAXBException, FileNotFoundException {
 

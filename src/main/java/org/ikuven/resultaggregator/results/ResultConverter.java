@@ -15,12 +15,26 @@ public class ResultConverter {
 
     public InternalResult process(InputStream xmlContent, Integer limit) throws JAXBException {
 
-        ResultList resultList = (ResultList) getUnmarshaller().unmarshal(xmlContent);
+        ResultList resultList = getResultList(xmlContent);
 
         InternalEvent internalEvent = extractEventData(resultList);
         List<InternalClassResult> internalClassResults = extractResult(resultList, limit);
 
         return InternalResult.of(internalEvent, internalClassResults);
+    }
+
+    public InternalResult process(InputStream xmlContent, String eventClass, Integer limit) throws JAXBException {
+
+        ResultList resultList = getResultList(xmlContent);
+
+        InternalEvent internalEvent = extractEventData(resultList);
+        List<InternalClassResult> internalClassResults = extractResult(resultList, eventClass, limit);
+
+        return InternalResult.of(internalEvent, internalClassResults);
+    }
+
+    private ResultList getResultList(InputStream xmlContent) throws JAXBException {
+        return (ResultList) getUnmarshaller().unmarshal(xmlContent);
     }
 
     private InternalEvent extractEventData(ResultList resultList) {
@@ -31,6 +45,13 @@ public class ResultConverter {
     private List<InternalClassResult> extractResult(ResultList resultList, Integer limit) {
         return resultList.getClassResult().stream()
                 .map((ClassResult classResult) -> toInternalClassResult(classResult, limit))
+                .collect(Collectors.toList());
+    }
+
+    private List<InternalClassResult> extractResult(ResultList resultList, String eventClass, Integer limit) {
+        return resultList.getClassResult().stream()
+                .map((ClassResult classResult) -> toInternalClassResult(classResult, limit))
+                .filter(internalClassResult -> internalClassResult.getName().equals(eventClass))
                 .collect(Collectors.toList());
     }
 
